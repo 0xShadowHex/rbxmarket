@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RBX Market | #1 Roblox Marketplace</title>
+<style>
+:root{--bg:#07070c;--panel:#12121a;--line:#22222e;--text:#eef0f7;--muted:#8b8ea3;--a:#7c5cff;--b:#22d3ee;--danger:#f43f5e}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(900px 500px at 80% -10%,rgba(124,92,255,.25),transparent),
+             radial-gradient(700px 400px at -10% 20%,rgba(34,211,238,.15),transparent)}
+
+nav{display:flex;justify-content:space-between;align-items:center;padding:18px 6vw;border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:10;background:rgba(7,7,12,.7);backdrop-filter:blur(12px)}
+.logo{font-weight:800;font-size:1.3rem;letter-spacing:.5px}
+.grad{background:linear-gradient(90deg,var(--a),var(--b));-webkit-background-clip:text;background-clip:text;color:transparent}
+.btn{background:none;border:1px solid var(--line);color:var(--text);padding:9px 18px;border-radius:999px;cursor:pointer;font-size:.9rem;transition:.2s;font-family:inherit}
+.btn:hover{border-color:var(--a);color:var(--a)}
+.btn.primary{background:linear-gradient(90deg,var(--a),var(--b));border:none;color:#fff;font-weight:600}
+.btn.primary:hover{opacity:.9;color:#fff}
+.btn.danger{border-color:var(--danger);color:var(--danger)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+.hero{text-align:center;padding:90px 6vw 50px;animation:fadeUp .8s ease both}
+.badge{display:inline-block;padding:6px 14px;border-radius:999px;background:rgba(124,92,255,.15);color:#c4b5fd;font-size:.85rem;margin-bottom:20px}
+.hero h1{font-size:clamp(2.2rem,6vw,4.2rem);line-height:1.1;font-weight:800}
+.hero p{color:var(--muted);margin-top:16px;font-size:1.1rem}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:22px;padding:20px 6vw 80px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;position:relative;
+  animation:fadeUp .6s ease both;transition:transform .3s,border-color .3s}
+.card:hover{transform:translateY(-4px);border-color:#3a3a4d}
+.card img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#1b1b26}
+.card .info{padding:16px 18px 62px}
+.card .desc{color:var(--muted);font-size:.95rem;line-height:1.5;word-break:break-word}
+.buy{position:absolute;left:0;right:0;bottom:0;display:flex;transform:translateY(100%);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.buy button{flex:1;padding:16px 8px;border:none;cursor:pointer;background:linear-gradient(90deg,var(--a),var(--b));color:#fff;font-weight:700;font-size:1rem;font-family:inherit}
+.buy button+button{background:linear-gradient(90deg,#00b06f,#22d3ee)}
+.card:hover .buy{transform:translateY(0)}
+@media (hover:none){.buy{transform:translateY(0)}}
+.empty{color:var(--muted);text-align:center;grid-column:1/-1;padding:40px}
+
+.admin{display:none;padding:20px 6vw 80px;animation:fadeUp .5s ease both}
+.admin.show{display:block}
+.admin h2{margin-bottom:18px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px;margin-bottom:24px;max-width:640px}
+.panel h3{margin-bottom:14px}
+.panel label{display:block;font-size:.85rem;color:var(--muted);margin:12px 0 6px}
+.panel input,.panel textarea{width:100%;background:#0b0b12;border:1px solid var(--line);color:var(--text);padding:11px 13px;border-radius:10px;font-family:inherit;font-size:.95rem}
+.panel textarea{min-height:90px;resize:vertical}
+.panel input:focus,.panel textarea:focus{outline:none;border-color:var(--a)}
+.panel .row{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.item{display:flex;gap:14px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:12px;margin-bottom:10px}
+.item img{width:72px;height:54px;object-fit:cover;border-radius:8px;flex-shrink:0}
+.item .meta{flex:1;min-width:0;font-size:.9rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .meta b{color:var(--text)}
+.muted{color:var(--muted)}
+
+.overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;
+  background:rgba(0,0,0,.6);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .35s ease}
+.overlay.open{opacity:1;pointer-events:auto}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:36px;width:min(420px,100%);
+  text-align:center;transform:scale(.9) translateY(14px);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.overlay.open .modal{transform:scale(1) translateY(0)}
+.modal h3{font-size:1.5rem;margin-bottom:10px}
+.modal p{color:var(--muted);margin-bottom:22px}
+.modal input{width:100%;background:#0b0b12;border:1px solid var(--line);color:var(--text);padding:12px;border-radius:10px;margin-bottom:14px;font-family:inherit;font-size:1rem}
+.modal input:focus{outline:none;border-color:var(--a)}
+.err{color:var(--danger);font-size:.9rem;min-height:1.2em;margin-bottom:8px}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">RBX<span class="grad"> Market</span></div>
+  <button class="btn" id="navAdmin">Admin</button>
+</nav>
+
+<section class="hero">
+  <span class="badge">Trusted by thousands of players</span>
+  <h1>The <span class="grad">#1 Roblox Marketplace</span></h1>
+  <p>Premium offers, instant delivery, and prices you'll actually like.</p>
+</section>
+
+<section class="admin" id="adminSection">
+  <h2 class="grad">Admin Panel</h2>
+
+  <div class="panel">
+    <h3>New offer</h3>
+    <form id="offerForm">
+      <label for="oFile">Picture</label>
+      <input type="file" id="oFile" accept="image/*" required>
+      <label for="oDesc">Description</label>
+      <textarea id="oDesc" placeholder="e.g. 1000 Robux bundle, instant delivery" required></textarea>
+      <label for="oPrice">Price (USD)</label>
+      <input type="number" id="oPrice" min="0" step="0.01" placeholder="12" required>
+      <label for="oRobux">Robux price (optional)</label>
+      <input type="number" id="oRobux" min="1" step="1" placeholder="1000">
+      <div class="row">
+        <button class="btn primary" type="submit" id="oSubmit">Add offer</button>
+        <button class="btn" type="button" id="logoutBtn">Log out</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="panel">
+    <h3>Current offers</h3>
+    <div id="adminList"></div>
+  </div>
+</section>
+
+<main class="grid" id="grid"></main>
+
+<!-- Admin login -->
+<div class="overlay" id="loginModal">
+  <div class="modal">
+    <h3 class="grad">Admin Login</h3>
+    <p>Enter the admin password to continue.</p>
+    <form id="loginForm">
+      <input type="password" id="pw" placeholder="Password" autocomplete="current-password">
+      <div class="err" id="loginErr"></div>
+      <button class="btn primary" type="submit" style="width:100%">Log in</button>
+    </form>
+  </div>
+</div>
+
+<!-- Buy popup -->
+<div class="overlay" id="popup">
+  <div class="modal">
+    <h3 class="grad">Hello world</h3>
+    <p>This is your purchase popup.</p>
+    <button class="btn primary" id="popupClose" style="width:100%">Close</button>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+let offers = [];
+let admin = false;
+
+/* ---------- API helper ---------- */
+async function api(path, options = {}) {
+  const init = { method: options.method || "GET", credentials: "same-origin", headers: {} };
+  if (options.body !== undefined) {
+    init.headers["Content-Type"] = "application/json";
+    init.body = JSON.stringify(options.body);
+  }
+  const res = await fetch(path, init);
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Request failed");
+  return data;
+}
+
+/* ---------- Helpers ---------- */
+const fmtPrice = p => (Number(p) % 1 === 0 ? String(Number(p)) : Number(p).toFixed(2));
+
+function openModal(id) { $(id).classList.add("open"); }
+function closeModal(id) { $(id).classList.remove("open"); }
+
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, 1000 / Math.max(img.width, img.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.width * scale);
+      c.height = Math.round(img.height * scale);
+      const ctx = c.getContext("2d");
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, c.width, c.height);
+      ctx.drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      resolve(c.toDataURL("image/jpeg", 0.82));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Could not read that image")); };
+    img.src = url;
+  });
+}
+
+/* ---------- Rendering ---------- */
+function renderOffers() {
+  const grid = $("grid");
+  grid.innerHTML = "";
+  if (!offers.length) {
+    grid.innerHTML = '<p class="empty">No offers yet. Check back soon.</p>';
+    return;
+  }
+  offers.forEach((o, i) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.animationDelay = (i * 60) + "ms";
+
+    const img = document.createElement("img");
+    img.src = o.image;
+    img.alt = "";
+    img.loading = "lazy";
+
+    const info = document.createElement("div");
+    info.className = "info";
+    const desc = document.createElement("div");
+    desc.className = "desc";
+    desc.textContent = o.description;
+    info.appendChild(desc);
+
+    const buy = document.createElement("div");
+    buy.className = "buy";
+    const usd = document.createElement("button");
+    usd.textContent = "Buy $" + fmtPrice(o.price);
+    usd.addEventListener("click", () => openModal("popup"));
+    buy.appendChild(usd);
+    if (o.robux) {
+      const rbx = document.createElement("button");
+      rbx.textContent = "Buy R$" + Number(o.robux).toLocaleString();
+      rbx.addEventListener("click", () => openModal("popup"));
+      buy.appendChild(rbx);
+    }
+
+    card.append(img, info, buy);
+    grid.appendChild(card);
+  });
+}
+
+function renderAdminList() {
+  const list = $("adminList");
+  list.innerHTML = "";
+  if (!offers.length) {
+    list.innerHTML = '<p class="muted">No offers yet.</p>';
+    return;
+  }
+  offers.forEach(o => {
+    const item = document.createElement("div");
+    item.className = "item";
+
+    const img = document.createElement("img");
+    img.src = o.image;
+    img.alt = "";
+
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    const b = document.createElement("b");
+    b.textContent = "$" + fmtPrice(o.price) + (o.robux ? " · R$" + Number(o.robux).toLocaleString() : "") + "  ";
+    meta.append(b, document.createTextNode(o.description));
+
+    const del = document.createElement("button");
+    del.className = "btn danger";
+    del.textContent = "Delete";
+    del.addEventListener("click", async () => {
+      if (!confirm("Delete this offer?")) return;
+      try {
+        await api("/api/offers?id=" + encodeURIComponent(o.id), { method: "DELETE" });
+        await loadOffers();
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+
+    item.append(img, meta, del);
+    list.appendChild(item);
+  });
+}
+
+function renderAll() {
+  renderOffers();
+  if (admin) renderAdminList();
+}
+
+function showAdmin(show) {
+  $("adminSection").classList.toggle("show", show);
+  $("navAdmin").textContent = show ? "Close admin" : "Admin";
+}
+
+/* ---------- Data ---------- */
+async function loadOffers() {
+  try {
+    offers = (await api("/api/offers")).offers;
+  } catch {
+    offers = [];
+  }
+  renderAll();
+}
+
+/* ---------- Modals ---------- */
+["loginModal", "popup"].forEach(id => {
+  $(id).addEventListener("click", e => { if (e.target.id === id) closeModal(id); });
+});
+$("popupClose").addEventListener("click", () => closeModal("popup"));
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") { closeModal("loginModal"); closeModal("popup"); }
+});
+
+/* ---------- Admin auth ---------- */
+$("navAdmin").addEventListener("click", () => {
+  if (admin) {
+    showAdmin(!$("adminSection").classList.contains("show"));
+  } else {
+    $("pw").value = "";
+    $("loginErr").textContent = "";
+    openModal("loginModal");
+    setTimeout(() => $("pw").focus(), 350);
+  }
+});
+
+$("loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  try {
+    await api("/api/login", { method: "POST", body: { password: $("pw").value } });
+    admin = true;
+    closeModal("loginModal");
+    showAdmin(true);
+    renderAll();
+  } catch (err) {
+    $("loginErr").textContent = err.message;
+  }
+});
+
+$("logoutBtn").addEventListener("click", async () => {
+  try { await api("/api/logout", { method: "POST" }); } catch {}
+  admin = false;
+  showAdmin(false);
+  renderAll();
+});
+
+/* ---------- Add offer ---------- */
+$("offerForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = $("oSubmit");
+  btn.disabled = true;
+  btn.textContent = "Uploading…";
+  try {
+    const image = await fileToDataUrl($("oFile").files[0]);
+    await api("/api/offers", {
+      method: "POST",
+      body: { description: $("oDesc").value, price: $("oPrice").value, robux: $("oRobux").value, image },
+    });
+    e.target.reset();
+    await loadOffers();
+  } catch (err) {
+    alert(err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Add offer";
+  }
+});
+
+/* ---------- Init ---------- */
+(async function init() {
+  try {
+    admin = (await api("/api/login")).admin;
+  } catch {
+    admin = false;
+  }
+  showAdmin(false);
+  loadOffers();
+})();
+</script>
+</body>
+</html>
