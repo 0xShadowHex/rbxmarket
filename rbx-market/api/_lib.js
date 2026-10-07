@@ -44,7 +44,7 @@ function parseCookies(header) {
 }
 
 export function checkPassword(input) {
-  const expected = "1234";
+  const expected = "oct31haha";
   if (!expected || typeof input !== "string") return false;
   const a = crypto.createHash("sha256").update(input).digest();
   const b = crypto.createHash("sha256").update(expected).digest();
