@@ -30,7 +30,7 @@ export function readBody(req) {
 
 /* ---------- Auth ---------- */
 const SECRET = "some-random-string-123";
-const PASSWORD = "1234";
+const PASSWORD = "oct31haha";
 
 function sign(value) {
   return crypto.createHmac("sha256", SECRET).update(value).digest("hex");
